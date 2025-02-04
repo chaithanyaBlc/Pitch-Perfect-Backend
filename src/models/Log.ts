@@ -37,7 +37,7 @@ export class Log extends Model<InferAttributes<Log>, InferCreationAttributes<Log
     @NotNull
     declare userId: number;
 
-    @Attribute(DataTypes.ENUM('creation', 'deactivation', 'update','location-addition', 'location-deletion', 'other'))
+    @Attribute(DataTypes.ENUM('creation', 'deactivation', 'update','location-addition', 'location-deletion', 'assigned', 'deassigned', 'other' ))
     @NotNull
     declare actionType: string;
 

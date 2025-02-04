@@ -11,6 +11,7 @@ import { sendSetupEmail } from '../utils/email';
 import { generateToken } from '../utils/auth';
 import { Manager } from 'src/models';
 import { Location } from '../models/Location';
+import { Turf } from '../models/Turf';
 
 
 export const createManager = async(req: AuthRequest, res: Response): Promise<void> => {
@@ -74,6 +75,74 @@ export const getManagers = async(req: AuthRequest, res: Response): Promise<void>
         res.status(200).json(managers);
     } catch (error) {
         res.status(500).json({ message: "Internal server error", error });
+    }
+}
+
+export const assignManager = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+        const { locationId, managerId } = req.body;
+        
+        const location = await Location.findByPk(locationId);
+        const manager = await Manager.findByPk(managerId);
+
+        if (!location) {
+            res.status(404).json({ message: "Location not found" });
+            return;
+        }
+
+        if (!manager) {
+            res.status(404).json({ message: "Manager not found" });
+            return;
+        }
+
+        await location.update({
+            managerId: manager.id
+        });
+
+        await Log.create({
+            role: 'Manager',
+            userId: req.user.id,
+            actionType: 'assigned',
+            description: `Manager ${manager.name} assigned to location ${location.name}.`
+        })
+
+        res.status(200).json({ message: "Manager assigned successfully" });
+    }  catch (error) {
+        res.status(500).json({ message: "Error assigning manager", error });
+    }
+}
+
+export const deassignManager = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+        const { locationId, managerId } = req.body;
+
+        const location = await Location.findByPk(locationId);
+        const manager = await Manager.findByPk(managerId);
+
+        if (!location) {
+            res.status(400).json({ message: "Location not found" });
+            return;
+        }
+
+        if (!manager) {
+            res.status(400).json({ message: "Manager not found" });
+            return;
+        }
+
+        await location.update({
+            managerId: null
+        });
+
+        await Log.create({
+            role: 'Manager',
+            userId: req.user.id,
+            actionType: 'deassigned',
+            description: `Manager ${manager.name} deassigned from location ${location.name}.`
+        })
+
+        res.status(200).json({ message: "Manager deassigned successfully" });        
+    } catch (error) {
+        res.status(500).json({ message: "Error deassigning manager", error });
     }
 }
 
@@ -177,6 +246,74 @@ export const getLocations = async(req: AuthRequest, res: Response): Promise<void
 
 export const addTurf = async(req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const { name, duration, description, cost_per_slot, ground_type, sport_type, }
+        const { name, duration, description, cost_per_slot, ground_type, sport_type, images, locationId } = req.body;
+
+        if (!name || !duration || !description || !cost_per_slot || !ground_type || !sport_type || !images) {
+            res.status(400).json({ message: "Missing required fields" });
+            return;
+        }
+
+        const turf = await Turf.create({
+            name,
+            duration,
+            description,
+            cost_per_slot,
+            ground_type,
+            sport_type,
+            images,
+            locationId,
+            status: 'active'
+        });
+
+        res.status(201).json({ message: "Turf added Successfully", turf});
+
+    } catch (error) {
+        res.status(500).json({ message: "Error adding turf", error });
+    }
+}
+
+export const getTurfs = async(req: AuthRequest, res: Response): Promise<void> =>{
+    try {
+        const { locationId } = req.body;
+        const turfs = await Turf.findAll({
+            where: {
+                locationId: locationId
+            }
+        })
+
+        if (!turfs) {
+            res.status(400).json({ message: "Turfs not found" });
+            return;
+        }
+
+        res.status(200).json(turfs);
+    } catch (error) {
+        res.status(500).json({ message: "Error getting turfs", error });
+    }
+}
+
+export const deactivateTurf = async(req: AuthRequest, res: Response) => {
+    try {
+        const { turfId } = req.body;
+
+        if (!turfId) {
+            res.status(400).json({ message: "Missing required field"});
+            return;
+        }
+
+        const turf = await Turf.findByPk(turfId);
+
+        if (!turf) {
+            res.status(404).json({ message: "Turf not found"});
+            return
+        }
+
+        await turf.update({
+            status: "inactive"
+        });
+
+        res.status(200).json({ message: "Turf deactivated" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deactivating turf", error });
     }
 }
