@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-green-50">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-[#b5e5c5] p-4 border-r border-green-100">
+            <div class="mb-8">
+                <img src="/images/logo.png" alt="Pitch Perfect Logo" class="w-32 mx-auto">
+            </div>
+            <nav class="space-y-4">
+                <div class="flex items-center space-x-2 px-4 py-2 text-green-800 hover:bg-green-100 rounded-lg cursor-pointer">
+                    <span class="font-medium">Dashboard</span>
+                </div>
+                <div class="flex items-center space-x-2 px-4 py-2 text-green-800 hover:bg-green-100 rounded-lg cursor-pointer">
+                    <span class="font-medium">Super Admin</span>
+                </div>
+                <div class="flex items-center space-x-2 px-4 py-2 text-green-800 hover:bg-green-100 rounded-lg cursor-pointer">
+                    <span class="font-medium">Turf Owners</span>
+                </div>
+                <div class="flex items-center space-x-2 px-4 py-2 text-green-800 hover:bg-green-100 rounded-lg cursor-pointer">
+                    <span class="font-medium">Logout</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 p-8">
+            <h1 class="text-2xl font-bold text-green-800 mb-6">Super Admin Dashboard</h1>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-4 gap-6 mb-8">
+                <div class="bg-[#d9f2e1] p-4 rounded-lg border border-green-100">
+                    <h3 class="text-green-800 text-sm font-medium">Total Super Admins</h3>
+                    <p id="totalSuperAdmins" class="text-green-900 text-4xl font-semibold mt-2">0</p>
+                </div>
+                <div class="bg-[#d9f2e1] p-4 rounded-lg border border-green-100">
+                    <h3 class="text-green-800 text-sm font-medium">Total Turf Owners</h3>
+                    <p id="totalTurfOwners" class="text-green-900 text-4xl font-semibold mt-2">0</p>
+                </div>
+                <div class="bg-[#d9f2e1] p-4 rounded-lg border border-green-100">
+                    <h3 class="text-green-800 text-sm font-medium">Active Turf Owners</h3>
+                    <p id="activeTurfOwners" class="text-green-900 text-4xl font-semibold mt-2">0</p>
+                </div>
+                <div class="bg-[#d9f2e1] p-4 rounded-lg border border-green-100">
+                    <h3 class="text-green-800 text-sm font-medium">Inactive Turf Owners</h3>
+                    <p id="inactiveTurfOwners" class="text-green-900 text-4xl font-semibold mt-2">0</p>
+                </div>
+            </div>
+
+            <!-- Super Admins Table -->
+            <div class="bg-[#d9f2e1] rounded-lg shadow mb-8">
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-green-800 mb-4">Super Admins</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left border-b border-gray-200">
+                                    <th class="pb-4 font-medium">Name</th>
+                                    <th class="pb-4 font-medium">Email</th>
+                                    <th class="pb-4 font-medium">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="superAdminsTableBody">
+                                <!-- Super admins will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turf Owners Table -->
+            <div class="bg-[#d9f2e1] rounded-lg shadow mb-8">
+                <div class="p-6">
+                    <h2 class="text-xl font-semibold text-green-800 mb-4">Turf Owners</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left border-b border-gray-200">
+                                    <th class="pb-4 font-medium">Name</th>
+                                    <th class="pb-4 font-medium">Email</th>
+                                    <th class="pb-4 font-medium">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="turfOwnersTableBody">
+                                <!-- Turf owners will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create axios instance with default config
+        const api = axios.create({
+            baseURL: 'http://localhost:3000',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+
+        async function fetchData() {
+            try {
+                // Fetch data using axios
+                const [superAdminsResponse, turfOwnersResponse] = await Promise.all([
+                    api.get('/superadmin/all'),
+                    api.get('/superadmin/admin/all')
+                ]);
+
+                const superAdmins = superAdminsResponse.data;
+                console.log(superAdminsResponse)
+                console.log(turfOwnersResponse)
+                const turfOwners = turfOwnersResponse.data;
+
+                // Update stats
+                document.getElementById('totalSuperAdmins').textContent = superAdmins.length;
+                document.getElementById('totalTurfOwners').textContent = turfOwners.length;
+                document.getElementById('activeTurfOwners').textContent = turfOwners.length;
+                document.getElementById('inactiveTurfOwners').textContent = '0';
+
+                // Update super admins table
+                const superAdminsTableBody = document.getElementById('superAdminsTableBody');
+                superAdminsTableBody.innerHTML = superAdmins.map(admin => `
+                    <tr class="border-b border-gray-100">
+                        <td class="py-4">${admin.name}</td>
+                        <td class="py-4">${admin.email}</td>
+                        <td class="py-4"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">Active</span></td>
+                    </tr>
+                `).join('');
+
+                // Update turf owners table
+                const turfOwnersTableBody = document.getElementById('turfOwnersTableBody');
+                turfOwnersTableBody.innerHTML = turfOwners.map(owner => `
+                    <tr class="border-b border-gray-100">
+                        <td class="py-4">${owner.name}</td>
+                        <td class="py-4">${owner.email}</td>
+                        <td class="py-4"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm">Active</span></td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                if (error.response) {
+                    // Handle specific error responses
+                    if (error.response.status === 401) {
+                        alert('Session expired. Please login again.');
+                        // Redirect to login page or handle accordingly
+                    } else {
+                        alert('Error fetching data. Please try again.');
+                    }
+                }
+            }
+        }
+
+        // Fetch data when page loads
+        fetchData();
+    </script>
+</body>
+</html>

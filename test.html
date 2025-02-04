@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Turf Owner Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow">
+            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <h1 class="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <!-- Total Bookings Card -->
+                <div class="bg-white overflow-hidden rounded-lg shadow">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Total Bookings</dt>
+                                    <dd class="text-lg font-semibold text-gray-900">1,482</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3">
+                        <div class="text-sm text-green-600">
+                            <span class="font-medium">↑ 12%</span>
+                            <span>from last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Managers Card -->
+                <div class="bg-white overflow-hidden rounded-lg shadow">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Active Managers</dt>
+                                    <dd class="text-lg font-semibold text-gray-900">8</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3">
+                        <div class="text-sm">
+                            <span class="font-medium text-gray-600">All locations covered</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Turfs Card -->
+                <div class="bg-white overflow-hidden rounded-lg shadow">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Total Turfs</dt>
+                                    <dd class="text-lg font-semibold text-gray-900">12</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3">
+                        <div class="text-sm">
+                            <span class="font-medium text-blue-600">3 locations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Card -->
+                <div class="bg-white overflow-hidden rounded-lg shadow">
+                    <div class="p-5">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="ml-5 w-0 flex-1">
+                                <dl>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Monthly Revenue</dt>
+                                    <dd class="text-lg font-semibold text-gray-900">₹92,000</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-5 py-3">
+                        <div class="text-sm text-green-600">
+                            <span class="font-medium">↑ 8%</span>
+                            <span>from last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <!-- Booking Trends -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Booking Trends</h3>
+                    <canvas id="bookingTrends" class="w-full" height="300"></canvas>
+                </div>
+
+                <!-- Sport Type Distribution -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">Sport Type Distribution</h3>
+                    <canvas id="sportDistribution" class="w-full" height="300"></canvas>
+                </div>
+            </div>
+
+            <!-- Live Bookings Section -->
+            <div class="mt-8">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Live Bookings</h3>
+                    </div>
+                    <div class="border-t border-gray-200">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turf</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Slot</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="h-10 w-10 flex-shrink-0">
+                                                    <img class="h-10 w-10 rounded-full" src="/api/placeholder/40/40" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Rahul Sharma</div>
+                                                    <div class="text-sm text-gray-500">+91 98765 43210</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Turf A1</div>
+                                            <div class="text-sm text-gray-500">Location: Mumbai Central</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">6:00 PM - 7:00 PM</div>
+                                            <div class="text-sm text-gray-500">Today</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Paid Online</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="h-10 w-10 flex-shrink-0">
+                                                    <img class="h-10 w-10 rounded-full" src="/api/placeholder/40/40" alt="">
+                                                </div>
+                                                <div class="ml-4">
+                                                    <div class="text-sm font-medium text-gray-900">Priya Patel</div>
+                                                    <div class="text-sm text-gray-500">+91 87654 32109</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">Turf B2</div>
+                                            <div class="text-sm text-gray-500">Location: Andheri West</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm text-gray-900">7:30 PM - 8:30 PM</div>
+                                            <div class="text-sm text-gray-500">Today</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Upcoming</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Cash Payment</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Sample Data
+        const monthlyData = {
+            bookings: [250, 285, 310, 290, 345, 380],
+            revenue: [45000, 52000, 58000, 54000, 62000, 92000],
+            months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+        };
+
+        const sportTypeData = {
+            labels: ['Football', 'Cricket', 'Basketball', 'Badminton'],
+            data: [45, 25, 15, 15],
+            colors: ['#4F46E5', '#7C3AED', '#EC4899', '#F59E0B']
+        };
+
+        // Booking Trends Chart
+        const bookingTrendsCtx = document.getElementById('bookingTrends').getContext('2d');
+        new Chart(bookingTrendsCtx, {
+            type: 'line',
+            data: {
+                labels: monthlyData.months,
+                datasets: [
+                    {
+                        label: 'Monthly Bookings',
+                        data: monthlyData.bookings,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(59, 130, 246)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Revenue (₹ hundreds)',
+                        data: monthlyData.revenue.map(val => val/100),
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        pointBackgroundColor: 'rgb(16, 185, 129)',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Booking & Revenue Trends'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+
+        // Sport Distribution Chart
+        const sportDistributionCtx = document.getElementById('sportDistribution').getContext('2d');
+        new Chart(sportDistributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: sportTypeData.labels,
+                datasets: [{
+                    data: sportTypeData.data,
+                    backgroundColor: sportTypeData.colors,
+                    borderWidth: 0,
+                    hoverOffset: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Sport Type Distribution (%)'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}%`;
+                            }
+                        }
+                    }
+                },
+                cutout: '60%',
+                animation: {
+                    animateScale: true,
+                    animateRotate: true
+                }
+            }
+        });
+
+        // Add hover effects to stat cards
+        document.querySelectorAll('.bg-white.overflow-hidden.rounded-lg.shadow').forEach(card => {
+            card.addEventListener('mouseover', () => {
+                card.classList.add('transform', 'scale-105', 'transition-transform');
+            });
+            card.addEventListener('mouseout', () => {
+                card.classList.remove('transform', 'scale-105', 'transition-transform');
+            });
+        });
+    </script>
+</body>
+</html>
