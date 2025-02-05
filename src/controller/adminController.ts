@@ -9,7 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ActionToken } from '../models/ActionToken';
 import { sendSetupEmail } from '../utils/email';
 import { generateToken } from '../utils/auth';
-import { Manager } from 'src/models';
+import { Manager } from '../models/Manager';
 import { Location } from '../models/Location';
 import { Turf } from '../models/Turf';
 

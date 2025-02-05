@@ -31,6 +31,9 @@ import { Manager } from './Manager';
     @Attribute(DataTypes.INTEGER.UNSIGNED)
     declare managerId: number | null
 
+    @Attribute(DataTypes.INTEGER.UNSIGNED)
+    declare userId: number | null
+
     @Attribute(DataTypes.ENUM('setup', 'resetPassword', 'email-change'))
     @NotNull
     declare purpose: string

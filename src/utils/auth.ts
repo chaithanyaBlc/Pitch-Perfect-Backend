@@ -4,14 +4,15 @@ import { Router } from 'express';
 import { JWTPayload, jwtVerify, SignJWT } from 'jose'
 import { SuperAdmin } from 'src/models';
 import { Admin } from 'src/models';
+import { User } from 'src/models';
 
 
-type Payload = Pick<InferAttributes<SuperAdmin | Admin>, 'id'>;
+type Payload = Pick<InferAttributes<SuperAdmin | Admin | User>, 'id'>;
 
 const ENCODED_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 // console.log(process.env.JWT_SECRET)
 
-export function generateToken(user: SuperAdmin | Admin, role: string): Promise<string> {
+export function generateToken(user: SuperAdmin | Admin | User, role: string): Promise<string> {
     return new SignJWT(<Payload> {
         id: user.id,
         role: role 

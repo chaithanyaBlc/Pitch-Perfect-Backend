@@ -220,7 +220,7 @@ export const updateSuperAdmin = async(req: AuthRequest, res: Response): Promise<
 
         let emailVerification = false;
         if (email) {
-            if (email.superAdmin.email) {
+            if (email === superAdmin.email) {
                 res.status(400).json({ message: "New email matches current email" });
                 return;
             }
