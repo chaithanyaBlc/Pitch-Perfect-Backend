@@ -5,7 +5,7 @@ import { ActionToken } from '../models/ActionToken';
 import { User } from '../models/User';
 import { generateToken } from '../utils/auth';
 import { AuthRequest } from 'src/middleware/auth';
-import { sendSetupEmail } from 'src/utils/email';
+import { sendSetupEmail } from '../utils/email';
 
 export const userSignup = async(req: Request, res: Response): Promise<void> => {
     try {
@@ -61,7 +61,7 @@ export const userLogin = async(req: AuthRequest, res: Response): Promise<void> =
             return;
         }
 
-        const token = await generateToken(user, 'user');
+        const token = await generateToken(user, 'User');
 
         res.status(200).json({
             message: "Login successful",
@@ -114,6 +114,8 @@ export const userUpdate = async (req: AuthRequest, res: Response): Promise<void>
             });
 
             await sendSetupEmail(email, token, 'email-change');
+
+            res.status(200).json({ message: "User updated successfully" })
         }
     } catch (error) {
         res.status(500).json({ message: "Error updating user", error });

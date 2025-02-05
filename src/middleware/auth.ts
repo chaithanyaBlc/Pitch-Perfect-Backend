@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { generateToken, verifyToken } from '../utils/auth';
 import { SuperAdmin } from '../models/SuperAdmin';
+import { Admin } from '../models/Admin';
+import { User } from '../models/User';
 
 export interface AuthRequest extends Request {
     user?: any 
@@ -29,9 +31,18 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
         // console.log(token)
 
         const decoded = await verifyToken(token)
-        // console.log("Decoded >>> ", decoded)
-        req.user = await SuperAdmin.findByPk(decoded.id);
-        req.user.role = decoded.role;
+        console.log(decoded)
+        if (decoded.role === "SuperAdmin") {
+            req.user = await SuperAdmin.findByPk(decoded.id);
+            req.user.role = decoded.role;
+        } else if (decoded.role === "Admin") {
+            req.user = await Admin.findByPk(decoded.id);
+            req.user.role = decoded.role;
+        } else {
+            req.user = await User.findByPk(decoded.id);
+            req.user.role = decoded.role;
+            
+        }
         next();
     } catch (error) {
         res.status(401).json({

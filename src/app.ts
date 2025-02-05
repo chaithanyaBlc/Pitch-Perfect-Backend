@@ -1,13 +1,15 @@
 import { Request, Response } from 'express';
 const express = require('express');
 const cors = require('cors')
+require('dotenv').config()
+import { sendSetupEmail } from "./utils/email"
 import superadminRoutes from './Routes/superAdminRouter';
 import adminRoutes from './Routes/adminRouter';
+import userRoutes from './Routes/userRouter';
 import sequelize from './config/db';
 import { SuperAdmin } from './models/SuperAdmin';
 import { Admin } from './models/Admin';
 import path from 'path';
-require('dotenv').config()
 
 
 const app = express();
@@ -32,14 +34,16 @@ app.get('/initialize', (req: Request, res: Response) => {
 
 app.use('/superadmin', superadminRoutes);
 app.use('/admin', adminRoutes);
+app.use('/user', userRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Hello World!');
 })
 
 
-sequelize.sync({ force: true }).then(async () => {
+sequelize.sync().then(async () => {
     app.listen(port, () => {
         console.log('Server is running on port: ', port);
+        
     });
 }).catch((err: Error) => console.log(err));

@@ -10,6 +10,8 @@ export const sendSetupEmail = async (
     role?: RoleType
     ): Promise<void> => {
     // Configure your email transport
+
+
     const transporter = nodemailer.createTransport({
         // Add your email service configuration here
         // Example for Gmail:
