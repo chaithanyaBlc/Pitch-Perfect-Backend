@@ -7,6 +7,7 @@ import { Manager } from './Manager';
 import { Turf } from './Turf';
 import { User } from './User';
 import { Booking } from './Booking';
+import { TemporaryReservation } from './TemporaryReservation';
 
-export { Admin, SuperAdmin, ActionToken, Log, Location, Manager, Turf, User, Booking };
+export { Admin, SuperAdmin, ActionToken, Log, Location, Manager, Turf, User, Booking, TemporaryReservation };
 

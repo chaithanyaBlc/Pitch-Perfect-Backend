@@ -10,6 +10,7 @@ import {
 import { attribute } from '@sequelize/core/_non-semver-use-at-your-own-risk_/expression-builders/attribute.js';
 import { Attribute, PrimaryKey, AutoIncrement, NotNull, Table, Unique, HasMany, BelongsTo } from '@sequelize/core/decorators-legacy';
 import { Location } from './Location';
+import { TemporaryReservation } from './TemporaryReservation';
 
 @Table({
     freezeTableName: true,
@@ -60,5 +61,15 @@ export class Turf extends Model<InferAttributes<Turf>, InferCreationAttributes<T
     })
 
     declare Location: NonAttribute<Location>
+
+    @HasMany(() => TemporaryReservation, {
+        foreignKey: {
+            name: 'turfId',
+            onDelete: 'CASCADE'
+        },
+        sourceKey: 'id'
+    })
+      
+    declare TemporaryReservations: NonAttribute<TemporaryReservation[]>
 
 }

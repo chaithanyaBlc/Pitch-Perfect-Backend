@@ -10,10 +10,18 @@ import sequelize from './config/db';
 import { SuperAdmin } from './models/SuperAdmin';
 import { Admin } from './models/Admin';
 import path from 'path';
-
+import http from 'http';
+import { Server } from 'socket.io';
 
 const app = express();
+const server = http.createServer(app);
 const port = 3000;
+
+const io = new Server(server, {
+    cors: {
+        origin: '*'
+    }
+})
 
 app.use(express.json());
 app.use(cors({
@@ -37,12 +45,21 @@ app.use('/admin', adminRoutes);
 app.use('/user', userRoutes);
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('Hello World!');
+    // res.send('Hello World!');
+    res.sendFile(path.join(__dirname, '/public/home.html'));
 })
 
 
+io.on("connection", (socket) => {
+    console.log("Client connected", socket.id)
+
+    socket.on("disconnect", () => {
+        console.log("Client disconnected", socket.id)
+    })
+})
+
 sequelize.sync().then(async () => {
-    app.listen(port, () => {
+    server.listen(port, () => {
         console.log('Server is running on port: ', port);
         
     });
