@@ -76,54 +76,56 @@
     </div>
 
     <script>
-        document.getElementById('setupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const errorMessage = document.getElementById('errorMessage');
-            
-            // Basic validation
-            if (password !== confirmPassword) {
-                errorMessage.textContent = 'Passwords do not match';
-                errorMessage.style.display = 'block';
-                return;
-            }
-    
-            if (password.length < 8) {
-                errorMessage.textContent = 'Password must be at least 8 characters long';
-                errorMessage.style.display = 'block';
-                return;
-            }
-    
-            try {
-                // Get token and determine the base URL
-                const urlParts = window.location.pathname.split('/');
-                const token = urlParts.pop();
-                const basePath = urlParts.join('/');
-    
-                // Determine the endpoint based on the URL structure
-                const endpoint = basePath.includes('/superadmin/initialize') 
-                    ? '/superadmin/complete-setup'
-                    : '/admin/complete-setup';
-    
-                const response = await axios.post(endpoint, {
-                    token,
-                    password
-                });
-    
-                if (response.status === 200) {
-                    // Redirect to login page or show success message
-                    const redirectUrl = basePath.includes('/superadmin/initialize') 
-                        ? '/superadmin/login'
-                        : '/admin/login';
-                    window.location.href = redirectUrl;
-                }
-            } catch (error) {
-                errorMessage.textContent = error.response?.data?.message || 'An error occurred. Please try again.';
-                errorMessage.style.display = 'block';
-            }
-        });
+document.getElementById('setupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Basic validation
+    if (password !== confirmPassword) {
+        errorMessage.textContent = 'Passwords do not match';
+        errorMessage.style.display = 'block';
+        return;
+    }
+
+    if (password.length < 8) {
+        errorMessage.textContent = 'Password must be at least 8 characters long';
+        errorMessage.style.display = 'block';
+        return;
+    }
+
+    try {
+        // Get token and determine the base URL
+        const urlParts = window.location.pathname.split('/');
+        const token = urlParts.pop();
+        const basePath = urlParts.join('/');
+
+        // Determine the endpoint based on the URL structure
+        let endpoint = '/admin/complete-setup';
+        let redirectUrl = '/admin/login';
+
+        if (basePath.includes('/superadmin/initialize')) {
+            endpoint = '/superadmin/complete-setup';
+            redirectUrl = '/superadmin/login';
+        } else if (basePath.includes('/manager/initialize')) {
+            endpoint = '/manager/complete-setup';
+            redirectUrl = '/manager/login';
+        }
+
+        const response = await axios.post(endpoint, { token, password });
+
+        if (response.status === 200) {
+            // Redirect to the corresponding login page
+            window.location.href = redirectUrl;
+        }
+    } catch (error) {
+        errorMessage.textContent = error.response?.data?.message || 'An error occurred. Please try again.';
+        errorMessage.style.display = 'block';
+    }
+});
+
     </script>
     
 </body>

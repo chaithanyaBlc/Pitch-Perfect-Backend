@@ -9,12 +9,11 @@ export const sendSetupEmail = async (
     purpose: string,
     role?: RoleType
     ): Promise<void> => {
-    // Configure your email transport
+    
 
 
     const transporter = nodemailer.createTransport({
-        // Add your email service configuration here
-        // Example for Gmail:
+
         service: 'gmail',
         auth: {
             user: process.env.EMAIL_USER,

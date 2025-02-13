@@ -34,17 +34,17 @@ export class Booking extends Model<InferAttributes<Booking>, InferCreationAttrib
     @NotNull
     declare total_cost: number;
 
-    @Attribute(DataTypes.ENUM('confirmed', 'canceled'))
+    @Attribute(DataTypes.ENUM('confirmed', 'pending', 'canceled', 'maintenance'))
     declare booking_status: string;
 
     @Attribute(DataTypes.ENUM('online', 'offline'))
     declare payment_type: string;
 
     @Attribute(DataTypes.ENUM('paid', 'refunded'))
-    declare payment_status: string;
+    declare payment_status: string | null;
 
     @Attribute(DataTypes.INTEGER.UNSIGNED)
-    declare userId: number;
+    declare userId: number | null;
 
     @BelongsTo(() => User, {
         foreignKey: 'userId',

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Turf Slots</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Axios via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100">
+  <div class="max-w-4xl mx-auto p-4">
+    <h1 class="text-3xl font-bold text-center mb-8">Turf Slots</h1>
+    
+    <!-- Date Filter -->
+    <div id="filter-container" class="mb-6"></div>
+    
+    <!-- Slots Container -->
+    <div id="slots-container"></div>
+    
+    <!-- Action Buttons -->
+    <div id="action-buttons" class="flex justify-center gap-4 mt-4">
+      <button id="lockButton" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+        Lock Slots
+      </button>
+      <button id="confirmButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+        Confirm Booking
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Global state variables.
+    let allDaysData = [];
+    let currentDay = null;
+    let selectedSlots = [];
+    let bookingId = null;
+    const turfId = 1; // Hardcoded for demonstration.
+    const userId = 1; // Hardcoded user id for confirming booking.
+
+    // Helper function: Format ISO time into a user-friendly format.
+    function formatTime(isoString) {
+      const options = { hour: '2-digit', minute: '2-digit' };
+      return new Date(isoString).toLocaleTimeString([], options);
+    }
+
+    // Renders slots for a single day.
+    function renderSlotsForDay(day) {
+      // Update current day and reset selected slots & booking.
+      currentDay = day;
+      console.log('currentDay >>', currentDay)
+      currentDay.cost_per_slot = day.cost_per_slot;
+      selectedSlots = [];
+      bookingId = null;
+      document.getElementById('confirmButton').setAttribute('disabled', true);
+
+      const slotsContainer = document.getElementById('slots-container');
+      slotsContainer.innerHTML = ''; // Clear previous content
+
+      // Card for the day.
+      const dayCard = document.createElement('div');
+      dayCard.className = 'bg-white rounded shadow p-6 mb-6';
+
+      // Day header.
+      const dayHeader = document.createElement('h2');
+      dayHeader.className = 'text-xl font-semibold mb-4';
+      dayHeader.textContent = new Date(day.date).toDateString();
+      dayCard.appendChild(dayHeader);
+
+      // Slots grid: 1 column on small screens, 3 on medium+.
+      const grid = document.createElement('div');
+      grid.className = 'grid grid-cols-1 md:grid-cols-3 gap-4';
+
+      // For each slot, create a clickable card.
+      day.slots.forEach(slot => {
+        const slotCard = document.createElement('div');
+        // Apply styling based on booking status.
+        slotCard.className = `cursor-pointer p-4 border rounded text-center transition-transform hover:scale-105 ${
+          slot.isBooked ? 'bg-red-200 border-red-300' : 'bg-green-200 border-green-300'
+        }`;
+        // Store slot details as dataset attributes for later use.
+        slotCard.dataset.start = slot.start_time;
+        slotCard.dataset.end = slot.end_time;
+        // Prevent selection if already booked.
+        if (slot.isBooked) {
+          slotCard.style.cursor = 'not-allowed';
+        }
+        // Display the time range.
+        const timeText = document.createElement('p');
+        timeText.className = 'font-bold mb-2';
+        timeText.textContent = `${formatTime(slot.start_time)} - ${formatTime(slot.end_time)}`;
+        slotCard.appendChild(timeText);
+
+        // Status badge.
+        const badge = document.createElement('span');
+        badge.className = `inline-block px-2 py-1 rounded text-xs font-bold ${
+          slot.isBooked ? 'bg-red-500 text-white' : 'bg-green-500 text-white'
+        }`;
+        badge.textContent = slot.isBooked ? 'Booked' : 'Available';
+        slotCard.appendChild(badge);
+
+        // Only allow selection if slot is not booked.
+        if (!slot.isBooked) {
+          slotCard.addEventListener('click', () => {
+            // Check if this slot is already selected.
+            const index = selectedSlots.findIndex(
+              s => s.start_time === slot.start_time && s.end_time === slot.end_time
+            );
+            if (index > -1) {
+              // Deselect the slot.
+              selectedSlots.splice(index, 1);
+              slotCard.classList.remove('ring-4', 'ring-blue-500');
+            } else {
+              // Select the slot.
+              selectedSlots.push(slot);
+              slotCard.classList.add('ring-4', 'ring-blue-500');
+            }
+          });
+        }
+        grid.appendChild(slotCard);
+      });
+
+      dayCard.appendChild(grid);
+      slotsContainer.appendChild(dayCard);
+    }
+
+    // Creates a date filter dropdown.
+    function createDateFilter(daysData) {
+      const filterContainer = document.getElementById('filter-container');
+      filterContainer.innerHTML = '';
+
+      const label = document.createElement('label');
+      label.setAttribute('for', 'dateFilter');
+      label.className = 'block text-lg font-medium text-gray-700 mb-2';
+      label.textContent = 'Select Date:';
+      filterContainer.appendChild(label);
+
+      const select = document.createElement('select');
+      select.id = 'dateFilter';
+      select.className = 'block w-full p-2 border border-gray-300 rounded';
+
+      daysData.forEach(day => {
+        const option = document.createElement('option');
+        option.value = day.date; // Ensure date is unique.
+        option.textContent = new Date(day.date).toDateString();
+        select.appendChild(option);
+      });
+
+      // When user changes date, render that day's slots.
+      select.addEventListener('change', (event) => {
+        const selectedDate = event.target.value;
+        const selectedDay = daysData.find(day => day.date === selectedDate);
+        if (selectedDay) {
+          renderSlotsForDay(selectedDay);
+        }
+      });
+
+      filterContainer.appendChild(select);
+    }
+
+    // Button Event: Lock Slots.
+    document.getElementById('lockButton').addEventListener('click', () => {
+  if (selectedSlots.length === 0) {
+    alert("Please select at least one available slot.");
+    return;
+  }
+  
+  // Sort selected slots by start time.
+  const sortedSlots = selectedSlots.slice().sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
+  
+  // Verify that the selected slots are contiguous.
+  let contiguous = true;
+  for (let i = 0; i < sortedSlots.length - 1; i++) {
+    const currentEnd = new Date(sortedSlots[i].end_time).getTime();
+    const nextStart = new Date(sortedSlots[i + 1].start_time).getTime();
+    // They must be exactly equal for slots to be contiguous.
+    if (currentEnd !== nextStart) {
+      contiguous = false;
+      break;
+    }
+  }
+  
+  if (!contiguous) {
+    alert("Please select contiguous slots only. If you want to book non-adjacent slots, please book them separately.");
+    return;
+  }
+  
+  // If slots are contiguous, determine booking start and end times.
+  const start_time = sortedSlots[0].start_time;
+  const end_time = sortedSlots[sortedSlots.length - 1].end_time;
+  // Total cost = number of selected slots * cost per slot.
+  const total_cost = currentDay.cost_per_slot * sortedSlots.length;
+  const payment_type = "online"; // Example default
+  
+  axios.post(`http://localhost:3000/turf/${turfId}/lock`, {
+    turfId,
+    start_time,
+    end_time,
+    total_cost,
+    payment_type
+  })
+  .then(response => {
+    alert("Turf locked successfully. Please confirm booking within 5 minutes.");
+    bookingId = response.data.data.id;
+    // Enable the Confirm Booking button.
+    document.getElementById('confirmButton').removeAttribute('disabled');
+  })
+  .catch(error => {
+    console.error('Error locking turf:', error);
+    const msg = error.response?.data?.message || "Error locking turf. Please try again later.";
+    alert(msg);
+  });
+});
+
+
+    // Button Event: Confirm Booking.
+    document.getElementById('confirmButton').addEventListener('click', () => {
+        console.log("bookingId >>", bookingId)
+      if (!bookingId) {
+        alert("Please lock a booking first.");
+        return;
+      }
+      axios.post(`http://localhost:3000/booking/${bookingId}/confirm`, { userId })
+      .then(response => {
+        alert("Booking confirmed successfully.");
+        // Optionally, refresh or update the UI.
+      })
+      .catch(error => {
+        console.error('Error confirming booking:', error);
+        const msg = error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : "Error confirming booking. Please try again later.";
+        alert(msg);
+      });
+    });
+
+    // Fetch all days' slots data from backend.
+    axios.get('http://localhost:3000/turf/1/get-slots')
+      .then(response => {
+        // Expected format: { data: [ { date, slots: [...], cost_per_slot }, ... ] }
+        allDaysData = response.data.data;
+        allDaysData[0].cost_per_slot = response.data.cost_per_slot;
+        console.log(response.data.cost_per_slot)
+        // var cost_per_slot = response.data.cost_per_slot;
+        if (allDaysData && allDaysData.length > 0) {
+          createDateFilter(allDaysData);
+          // Render the first day's slots by default.
+          renderSlotsForDay(allDaysData[0]);
+          console.log("allDaysData >>", allDaysData[0])
+        } else {
+          document.getElementById('slots-container').innerHTML = `
+            <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded" role="alert">
+              No slot data available.
+            </div>
+          `;
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching slots:', error);
+        document.getElementById('slots-container').innerHTML = `
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
+            <strong>Error!</strong> Failed to load slots. Please try again later.
+          </div>
+        `;
+      });
+  </script>
+</body>
+</html>

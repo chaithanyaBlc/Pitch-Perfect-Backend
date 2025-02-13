@@ -1,26 +1,40 @@
 import { Router, Request, Response } from "express";
 const router = Router();
+import path from 'path';
+import { protect } from '../middleware/auth';
 import { completeAdminSetup } from '../controller/superAdminController';
-import { createManager, getManagers, deactivateManager, createLocation, getLocations, deactivateLocation, addTurf, getTurfs, deactivateTurf } from '../controller/adminController';
+import { adminLogin,createManager, generateQRImage, getManagers, deactivateManager, createLocation, getLocations, deactivateLocation, addTurf, getTurfs, deactivateTurf, assignManager, deassignManager } from '../controller/adminController';
 
-router.post('/create-manager', createManager);
 
-router.get('/get-managers', getManagers);
+router.get('/login', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../public/login.html'))
+});
 
-router.post('/deactivate-manager', deactivateManager);
 
-router.post('/create-location', createLocation);
+router.post('/location/assign-manager', protect, assignManager);
+router.post('/location/deassign-manager', protect, deassignManager);
 
-router.get('/get-locations', getLocations);
+router.post('/login', adminLogin);
+router.post('/create-manager', protect, createManager);
 
-router.post('/deactivate-location', deactivateLocation);
+router.get('/get-managers', protect, getManagers);
 
-router.post('/add-turf', addTurf);
+router.post('/deactivate-manager', protect, deactivateManager);
 
-router.get('/get-turfs', getTurfs);
+router.post('/create-location', protect, createLocation);
 
-router.post('/deactivate-turf', deactivateTurf);
+router.get('/get-locations', protect, getLocations);
+
+router.post('/deactivate-location', protect, deactivateLocation);
+
+router.post('/add-turf', protect, addTurf);
+
+router.get('/get-turfs', protect, getTurfs);
+
+router.post('/deactivate-turf', protect, deactivateTurf);
 
 router.post('/complete-setup', completeAdminSetup);
+
+router.post('/generate-qr', generateQRImage)
 
 export default router;

@@ -3,6 +3,7 @@ import { generateToken, verifyToken } from '../utils/auth';
 import { SuperAdmin } from '../models/SuperAdmin';
 import { Admin } from '../models/Admin';
 import { User } from '../models/User';
+import { Manager } from '../models/Manager';
 
 export interface AuthRequest extends Request {
     user?: any 
@@ -32,13 +33,17 @@ export const protect = async (req: AuthRequest, res: Response, next: NextFunctio
 
         const decoded = await verifyToken(token)
         console.log(decoded)
-        if (decoded.role === "SuperAdmin") {
+        if (decoded.role === "superAdmin") {
             req.user = await SuperAdmin.findByPk(decoded.id);
             req.user.role = decoded.role;
         } else if (decoded.role === "Admin") {
             req.user = await Admin.findByPk(decoded.id);
             req.user.role = decoded.role;
-        } else {
+        } else if (decoded.role === "Manager") {
+            req.user = await Manager.findByPk(decoded.id);
+            req.user.role = decoded.role;
+        }
+         else {
             req.user = await User.findByPk(decoded.id);
             req.user.role = decoded.role;
             

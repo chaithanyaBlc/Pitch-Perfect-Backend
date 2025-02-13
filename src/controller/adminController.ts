@@ -12,6 +12,56 @@ import { generateToken } from '../utils/auth';
 import { Manager } from '../models/Manager';
 import { Location } from '../models/Location';
 import { Turf } from '../models/Turf';
+import QRCode from 'qrcode';
+
+
+export const adminLogin = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { username, password } = req.body;
+
+        
+        if (!username || !password) {
+            res.status(400).json({ message: 'Username and password are required' });
+            return;
+        }
+
+       
+        const admin = await Admin.withScope('withPassword').findOne({ where: { username } });
+        
+        
+        if (!admin) {
+            res.status(401).json({ message: 'Invalid credentials' });
+            return;
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, admin.password)
+        
+        if (!isPasswordValid) {
+            res.status(401).json({ message: 'Invalid credentials' });
+            return;
+        }
+
+     
+        const token = await generateToken(admin, 'Admin');
+      
+
+       
+        res.status(200).json({
+            message: 'Login successful',
+            token,
+            user: {
+                id: admin.id,
+                name: admin.name,
+                username: admin.username,
+                email: admin.email
+            }
+        });
+
+    } catch (error) {
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Error during login', error });
+    }
+};
 
 
 export const createManager = async(req: AuthRequest, res: Response): Promise<void> => {
@@ -56,6 +106,59 @@ export const createManager = async(req: AuthRequest, res: Response): Promise<voi
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Error initializing Manager", error })
+    }
+}
+
+export const completeManagerInitialization = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+        const { token, password} = req.body;
+
+        const actionToken = await ActionToken.findOne({
+            where: {
+                token,
+                purpose: 'setup',
+                isUsed: false
+            }
+        })
+
+        if (!actionToken) {
+            res.status(400).json({ message: "Invalid or expired token" });
+            return;
+        }
+
+        const manager = await Manager.findByPk(actionToken.managerId);
+
+        if (!manager) {
+            res.status(404).json({ message: "Manager not found" });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await manager.update({ password: hashedPassword });
+
+        await actionToken.update({ isUsed: true });
+
+        res.status(200).json({
+            message: "Password setup completed successfully"
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error completing setup", error });
+    }
+}
+
+export const generateQRImage = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { locationId, turfId} = req.body;
+
+        if (!turfId) {
+            await QRCode.toFile('test.png', `http://localhost:3000/location/${locationId}`);
+        }
+        else {
+            await QRCode.toFile('test.png', `http://localhost:3000/location/${locationId}/turf/${turfId}`);
+        }
+    } catch (error) {
+        console.log(error);
     }
 }
 
