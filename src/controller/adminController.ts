@@ -151,14 +151,20 @@ export const generateQRImage = async (req: Request, res: Response): Promise<void
     try {
         const { locationId, turfId} = req.body;
 
-        if (!turfId) {
-            await QRCode.toFile('test.png', `http://localhost:3000/location/${locationId}`);
+        if (!turfId && !locationId) {
+            res.status(400).json({ message: "Missing locationId or turfId" });
+            return;
         }
-        else {
+        else if (turfId && !locationId) {
             await QRCode.toFile('test.png', `http://localhost:3000/location/${locationId}/turf/${turfId}`);
+            res.status(200).json({ message: "QR code generated successfully for the turf" });
+        } else {
+            await QRCode.toFile('test.png', `http://localhost:3000/location/${locationId}`);
+            res.status(200).json({ message: "QR code generated successfully for the location" });
         }
     } catch (error) {
         console.log(error);
+        res.status(500).json({ message: "Internal server error" });
     }
 }
 
